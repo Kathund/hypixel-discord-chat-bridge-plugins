@@ -2,8 +2,8 @@ import { type BridgeEventMap, BridgePlugin } from "hypixel-discord-chat-bridge/p
 
 class AutoFriendPlugin extends BridgePlugin<AutoFriendPlugin> {
   override readonly metadata = {
-    id: "autofriend",
     name: "AutoFriend",
+    description: "Automatically accepts incoming friends",
     version: "1.0.0",
     author: "kathund",
     link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/AutoFriend"

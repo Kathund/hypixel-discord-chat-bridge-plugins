@@ -1,3 +1,3 @@
 # Auto Friend
 
-Automatically accepts incomminmg friends
+Automatically accepts incoming friends
