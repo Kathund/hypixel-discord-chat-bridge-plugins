@@ -1,3 +1,3 @@
-# Urchin
+# BedWars Utils
 
-Adds Urchin related commands to in game minecraft commands
+Adds a bunch of bedwars related commands to the in game minecraft commands
