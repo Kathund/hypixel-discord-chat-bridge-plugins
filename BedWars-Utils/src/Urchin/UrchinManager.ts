@@ -1,10 +1,10 @@
-import BasicManager from "../BasicManager.js";
+import BasicManager from "../../BasicManager.js";
 import SessionsCommand from "./commands/SessionCommand.js";
 import UrchinCommand from "./commands/UrchinCommand.js";
 import WinstreakCommand from "./commands/WinstreakCommand.js";
 import { BedWars } from "hypixel-api-reborn";
-import type BedWarsUtilsPlugin from "../index.js";
-import type { CommandConstructor } from "../types.js";
+import type BedWarsUtilsPlugin from "../../index.js";
+import type { CommandConstructor } from "../../types.js";
 import type { SessionType, UrchinSessionResponse, UrchinTagsResponse, UrchinWinstreakResopnse } from "./types.js";
 
 class UrchinManager extends BasicManager {

@@ -1,7 +1,7 @@
-import SeraphManager from "./Seraph/SeraphManager.js";
-import TagsCommand from "./commands/TagsCommand.js";
-import UrchinManager from "./Urchin/UrchinManager.js";
-import VegaManager from "./Vega/VegaManager.js";
+import SeraphManager from "./src/Seraph/SeraphManager.js";
+import TagsCommand from "./src/commands/TagsCommand.js";
+import UrchinManager from "./src/Urchin/UrchinManager.js";
+import VegaManager from "./src/Vega/VegaManager.js";
 import ms, { type StringValue } from "ms";
 import { BridgePlugin, MowojangAPI } from "hypixel-discord-chat-bridge/plugin-api";
 import { Errors, HypixelAPIRebornError, isUUID } from "hypixel-api-reborn";

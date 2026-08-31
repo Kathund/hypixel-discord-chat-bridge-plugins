@@ -1,7 +1,7 @@
-import BasicManager from "../BasicManager.js";
+import BasicManager from "../../BasicManager.js";
 import SeraphCommand from "./commands/SeraphCommand.js";
-import type BedWarsUtilsPlugin from "../index.js";
-import type { CommandConstructor } from "../types.js";
+import type BedWarsUtilsPlugin from "../../index.js";
+import type { CommandConstructor } from "../../types.js";
 import type { SeraphBlacklistResponse } from "./types.js";
 
 class SeraphManager extends BasicManager {

@@ -1,8 +1,8 @@
-import BasicManager from "../BasicManager.js";
+import BasicManager from "../../BasicManager.js";
 import PingCommand from "./commands/PingCommand.js";
 import VegaCommand from "./commands/VegaCommand.js";
-import type BedWarsUtilsPlugin from "../index.js";
-import type { CommandConstructor } from "../types.js";
+import type BedWarsUtilsPlugin from "../../index.js";
+import type { CommandConstructor } from "../../types.js";
 import type { VegaBlacklistResponse, VegaPingResponse } from "./types.js";
 
 class VegaManager extends BasicManager {

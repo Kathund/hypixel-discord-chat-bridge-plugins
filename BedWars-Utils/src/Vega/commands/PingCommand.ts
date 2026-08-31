@@ -6,7 +6,7 @@ import {
   MowojangAPI,
   getMostRecent
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "../../index.js";
+import type BedWarsUtilsPlugin from "../../../index.js";
 import type { VegaPingItem } from "../types.js";
 
 class PingCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUtilsPlugin>> {

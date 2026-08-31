@@ -1,4 +1,4 @@
-import BedWarsUtilsPlugin from "../../index.js";
+import BedWarsUtilsPlugin from "../../../index.js";
 import {
   MinecraftCommand,
   MinecraftCommandData,

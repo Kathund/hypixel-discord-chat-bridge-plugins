@@ -1,4 +1,4 @@
-import BedWarsUtilsPlugin from "../../index.js";
+import BedWarsUtilsPlugin from "../../../index.js";
 import {
   MinecraftCommand,
   MinecraftCommandData,
@@ -24,9 +24,9 @@ class SeraphCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsU
     if (!data || data.data.blacklist.tagged === false) return await this.send(`${profile.data.username} has no Seraph tags.`);
     await this.send(
       truncateString(
-        `[Seraph] ${profile.data.username} is tagged for ${titleCase(data.data.blacklist.report_type)} | ${(
-          data.data.blacklist.tooltip ?? data.data.blacklist.reason
-        ).replaceAll(`${data.data.blacklist.report_type}: `, "")}`,
+        `[Seraph] ${profile.data.username} is tagged for ${titleCase(data.data.blacklist.report_type)} | ${(data.data.blacklist.tooltip ?? data.data.blacklist.reason)
+          .replaceAll(`${data.data.blacklist.report_type}: `, "")
+          .replaceAll("( Upgraded ) ", "")}`,
         BedWarsUtilsPlugin.TagTrimLength
       )
     );

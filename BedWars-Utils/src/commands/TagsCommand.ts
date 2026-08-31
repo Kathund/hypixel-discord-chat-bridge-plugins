@@ -6,7 +6,7 @@ import {
   MowojangAPI,
   titleCase
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "../index.js";
+import type BedWarsUtilsPlugin from "../../index.js";
 
 class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUtilsPlugin>> {
   override readonly data = new MinecraftCommandData()
