@@ -50,13 +50,7 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     const unix = Math.floor(Date.now() / 1000);
     const nextUnix = unix + Math.floor(ms("1h") / 1000);
 
-    const users = await this.scripts.plugin.data.gexpUserManager.getFullData().then((users) =>
-      users
-        .filter((user) => user.totalGexp !== 0)
-        .sort((a, b) => b.totalGexp - a.totalGexp)
-        .slice(0, 100)
-    );
-
+    const users = await this.scripts.plugin.data.gexpUserManager.getPage();
     if (users.length === 0) {
       await leaderboardMessage.edit({ content: "No users found", files: [], components: [] });
       await leaderboardInfoMessage.edit({
@@ -75,32 +69,21 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
       if (parsed) playerImages.push(parsed);
     }
 
-    const files: AttachmentBuilder[] = [];
+    if (playerImages.length === 0) return;
+    const images = await Promise.all(playerImages.map((image) => loadImage(image)));
+    const width = images[0]?.width ?? 1000;
+    const height = images[0]?.height ?? 50;
+    const canvas = createCanvas(width, height * images.length);
+    const ctx = canvas.getContext("2d");
+    for (const image of images) ctx.drawImage(image, 0, images.indexOf(image) * height, width, height);
 
-    for (let page = 0; page < playerImages.length; page += 10) {
-      const pageImages = playerImages.slice(page, page + 10);
-      const pageImage = pageImages[0];
-      if (!pageImage) continue;
-      const firstImage = await loadImage(pageImage);
-      const width = firstImage.width;
-      const height = firstImage.height;
-
-      const canvas = createCanvas(width, height * pageImages.length);
-      const ctx = canvas.getContext("2d");
-      for (let i = 0; i < pageImages.length; i++) {
-        const imagePage = pageImages[i];
-        if (!imagePage) continue;
-        const image = await loadImage(imagePage);
-        ctx.drawImage(image, 0, i * height, width, height);
-      }
-      files.push(new AttachmentBuilder(canvas.toBuffer("image/png"), { name: `leaderboard_${Math.floor(page / 10) + 1}.png` }));
-    }
-
-    await leaderboardMessage.edit({ content: null, files, components: [] });
+    await leaderboardMessage.edit({ content: null, files: [new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "leaderboard.png" })], components: [] });
     await leaderboardInfoMessage.edit({
       content: `**Last Updated:** <t:${unix}:F> (<t:${unix}:R>)\n**Next Update:** <t:${nextUnix}:F> (<t:${nextUnix}:R>)`,
       components: [
-        new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setLabel("Go To Top").setStyle(ButtonStyle.Link).setURL(leaderboardMessage.url))
+        new ActionRowBuilder<ButtonBuilder>().addComponents(
+          new ButtonBuilder().setLabel("View More").setStyle(ButtonStyle.Secondary).setCustomId("viewMoreGexpLeaderboard")
+        )
       ]
     });
   }
