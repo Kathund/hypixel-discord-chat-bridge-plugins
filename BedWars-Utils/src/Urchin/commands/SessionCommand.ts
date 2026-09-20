@@ -10,7 +10,7 @@ import {
   isBedWarsModeName,
   titleCase
 } from "hypixel-discord-chat-bridge/plugin-api";
-import { SessionTypes, isSessionTypeName } from "../types.js";
+import { SessionTypes, isSessionTypeName } from "../../types/urchin.ts";
 import type BedWarsUtilsPlugin from "../../../index.js";
 import type { BedWars, BedWarsMode } from "hypixel-api-reborn";
 
@@ -48,9 +48,9 @@ class SessionsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWar
   }
 
   override async execute(player: string, message: string): Promise<void> {
+    if (!this.minecraft.plugin.isFullyLoaded()) return await this.send("Urchin data wasn't loadded correctly");
     const type = `${message.slice(1).trim()} `.split(" ")[0] || "daily";
     if (!isSessionTypeName(type)) return await this.send("Invalid Session Type");
-    if (!this.minecraft.plugin.urchin) return await this.send("Urchin data wasn't loadded correctly");
     player = this.getArgs(message)[0] || player;
     const profile = await MowojangAPI.getProfile(player);
     if (profile.data === null) return await this.send(`${player} does not exist!`);

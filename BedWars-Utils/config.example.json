@@ -1,14 +1,17 @@
 {
+  "configVersion": 2,
   "urchin": {
-    "BASE_URL": "https://api.urchin.gg/v3",
-    "API_KEY": "URCHIN_API_KEY"
+    "baseUrl": "https://api.urchin.gg/v3",
+    "apiKey": "URCHIN_API_KEY"
   },
   "seraph": {
-    "BASE_URL": "https://api.seraph.si",
-    "API_KEY": "SERAPH_API_KEY"
+    "baseUrl": "https://api.seraph.si",
+    "apiKey": "SERAPH_API_KEY"
   },
   "vega": {
-    "BASE_URL": "https://bordic.xyz/api/v2"
+    "baseUrl": "https://bordic.xyz/api/v2"
   },
-  "CACHE_DURATION": "5m"
+  "other": {
+    "CACHE_DURATION": "5m"
+  }
 }

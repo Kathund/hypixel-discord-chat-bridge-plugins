@@ -1,12 +1,12 @@
+import ConfigManager from "./src/ConfigManager.ts";
 import SeraphManager from "./src/Seraph/SeraphManager.js";
 import TagsCommand from "./src/commands/TagsCommand.js";
 import UrchinManager from "./src/Urchin/UrchinManager.js";
 import VegaManager from "./src/Vega/VegaManager.js";
-import ms, { type StringValue } from "ms";
 import { BridgePlugin, MowojangAPI } from "hypixel-discord-chat-bridge/plugin-api";
 import { Errors, HypixelAPIRebornError, isUUID } from "hypixel-api-reborn";
-import { access, readFile } from "node:fs/promises";
-import type { CommandConstructor, ConfigData } from "./types.js";
+import type { BedWarsUtilsPluginWithData, CommandConstructor } from "./src/types/misc.ts";
+import type { BedWarsUtilsConfig } from "./src/types/config.ts";
 
 class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   override readonly metadata = {
@@ -21,7 +21,7 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   static TagTrimLength: number = 200;
   static commands: CommandConstructor[] = [TagsCommand, ...SeraphManager.commands, ...UrchinManager.commands, ...VegaManager.commands];
   readonly cache = new Map<string, { data: unknown; expiresAt: number }>();
-  CACHE_DURATION = ms("5m");
+  config?: BedWarsUtilsConfig;
   seraph?: SeraphManager;
   urchin?: UrchinManager;
   vega?: VegaManager;
@@ -41,42 +41,12 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   }
 
   private async loadData(): Promise<boolean> {
-    try {
-      await access("plugins/BedWars-Utils/config.json");
-    } catch {
-      this.context.logger.error("BedWars Utils plugin config not found.");
-      return false;
-    }
-    const data = JSON.parse(await readFile("plugins/BedWars-Utils/config.json", "utf-8"));
-    this.CACHE_DURATION = ms((data?.CACHE_DURATION ?? "5m") as StringValue);
-    this.loadSeraph(data?.seraph ?? {});
-    this.loadUrchin(data?.urchin ?? {});
-    this.loadVega(data?.vega ?? {});
+    const configManager = new ConfigManager();
+    this.config = await configManager.init();
+    this.seraph = new SeraphManager(this, this.config.seraph);
+    this.urchin = new UrchinManager(this, this.config.urchin);
+    this.vega = new VegaManager(this, this.config.urchin);
     return true;
-  }
-
-  private loadSeraph({ BASE_URL, API_KEY }: ConfigData) {
-    if (!BASE_URL || !API_KEY) {
-      this.context.logger.error("BedWars Utils plugin config is missing seraph data");
-      return false;
-    }
-    this.seraph = new SeraphManager(this, BASE_URL, API_KEY);
-  }
-
-  private loadUrchin({ BASE_URL, API_KEY }: ConfigData) {
-    if (!BASE_URL || !API_KEY) {
-      this.context.logger.error("BedWars Utils plugin config is missing urchin data");
-      return false;
-    }
-    this.urchin = new UrchinManager(this, BASE_URL, API_KEY);
-  }
-
-  private loadVega({ BASE_URL }: ConfigData) {
-    if (!BASE_URL) {
-      this.context.logger.error("BedWars Utils plugin config is missing vega data");
-      return false;
-    }
-    this.vega = new VegaManager(this, BASE_URL);
   }
 
   override stop(): Promise<void> {
@@ -95,6 +65,11 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
     const profile = await MowojangAPI.getProfile(input);
     if (profile.data === null) throw new HypixelAPIRebornError(Errors.PLAYER_DOES_NOT_EXIST);
     return profile.data.UUID;
+  }
+
+  isFullyLoaded(): this is BedWarsUtilsPluginWithData {
+    if (this.config === undefined) return false;
+    return true;
   }
 }
 

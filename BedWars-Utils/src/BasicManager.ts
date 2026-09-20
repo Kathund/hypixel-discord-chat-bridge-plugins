@@ -1,14 +1,18 @@
 import axios, { AxiosError, HttpStatusCode } from "axios";
+import ms, { type StringValue } from "ms";
 import { HypixelDiscordChatBridgeError } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "./index.js";
+import type BedWarsUtilsPlugin from "../index.js";
 
 class BasicManager {
+  protected cacheDuration: number = ms("5m");
   constructor(
     protected readonly plugin: BedWarsUtilsPlugin,
     protected readonly BASE_URL: string,
     protected readonly name: string,
     protected readonly requestHeaders: Record<string, string> = {}
-  ) {}
+  ) {
+    this.cacheDuration = ms((this.plugin.config?.other.CACHE_DURATION ?? "5m") as StringValue);
+  }
 
   protected async request<T>(endpoint: string): Promise<T | undefined> {
     endpoint = `${this.BASE_URL}/${endpoint}`;
@@ -20,7 +24,7 @@ class BasicManager {
 
     try {
       const { data } = await axios.get(endpoint, { headers: this.requestHeaders });
-      this.plugin.cache.set(endpoint, { data, expiresAt: Date.now() + this.plugin.CACHE_DURATION });
+      this.plugin.cache.set(endpoint, { data, expiresAt: Date.now() + this.cacheDuration });
       return data;
     } catch (error: unknown) {
       if (!(error instanceof AxiosError)) throw error;

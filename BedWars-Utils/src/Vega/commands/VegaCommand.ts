@@ -16,7 +16,7 @@ class VegaCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")]);
 
   override async execute(player: string, message: string): Promise<void> {
-    if (!this.minecraft.plugin.vega) return await this.send("Vega data wasn't loadded correctly");
+    if (!this.minecraft.plugin.isFullyLoaded()) return await this.send("Vega data wasn't loadded correctly");
     player = this.getArgs(message)[0] || player;
     const profile = await MowojangAPI.getProfile(player);
     if (profile.data === null) return await this.send(`${player} does not exist!`);

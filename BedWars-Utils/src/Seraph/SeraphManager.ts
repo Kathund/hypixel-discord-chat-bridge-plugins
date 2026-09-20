@@ -1,13 +1,14 @@
-import BasicManager from "../../BasicManager.js";
+import BasicManager from "../BasicManager.ts";
 import SeraphCommand from "./commands/SeraphCommand.js";
 import type BedWarsUtilsPlugin from "../../index.js";
-import type { CommandConstructor } from "../../types.js";
-import type { SeraphBlacklistResponse } from "./types.js";
+import type { CommandConstructor } from "../types/misc.ts";
+import type { BedWarsUtilsConfig } from "../types/config.ts";
+import type { SeraphBlacklistResponse } from "../types/seraph.ts";
 
 class SeraphManager extends BasicManager {
   static commands: CommandConstructor[] = [SeraphCommand];
-  constructor(plugin: BedWarsUtilsPlugin, BASE_URL: string, API_KEY: string) {
-    super(plugin, BASE_URL, "Seraph", { "seraph-api-key": API_KEY });
+  constructor(plugin: BedWarsUtilsPlugin, config: BedWarsUtilsConfig["seraph"]) {
+    super(plugin, config.baseUrl, "Seraph", { "seraph-api-key": config.apiKey });
   }
 
   async getBlacklist(query: string): Promise<SeraphBlacklistResponse | undefined> {

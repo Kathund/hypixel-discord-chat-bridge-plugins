@@ -7,7 +7,7 @@ import {
   getMostRecent
 } from "hypixel-discord-chat-bridge/plugin-api";
 import type BedWarsUtilsPlugin from "../../../index.js";
-import type { ParsedUrchinWinstreaks, UrchinWinstreakMode, UrchinWinstreakModes } from "../types.js";
+import type { ParsedUrchinWinstreaks, UrchinWinstreakMode, UrchinWinstreakModes } from "../../types/urchin.ts";
 
 class WinstreakCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUtilsPlugin>> {
   override readonly data = new MinecraftCommandData()
@@ -17,7 +17,7 @@ class WinstreakCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWa
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")]);
 
   override async execute(player: string, message: string): Promise<void> {
-    if (!this.minecraft.plugin.urchin) return await this.send("Urchin data wasn't loadded correctly");
+    if (!this.minecraft.plugin.isFullyLoaded()) return await this.send("Urchin data wasn't loadded correctly");
     player = this.getArgs(message)[0] || player;
     const profile = await MowojangAPI.getProfile(player);
     if (profile.data === null) return await this.send(`${player} does not exist!`);

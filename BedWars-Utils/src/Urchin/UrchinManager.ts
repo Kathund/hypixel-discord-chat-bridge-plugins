@@ -1,16 +1,17 @@
-import BasicManager from "../../BasicManager.js";
+import BasicManager from "../BasicManager.ts";
 import SessionsCommand from "./commands/SessionCommand.js";
 import UrchinCommand from "./commands/UrchinCommand.js";
 import WinstreakCommand from "./commands/WinstreakCommand.js";
 import { BedWars } from "hypixel-api-reborn";
 import type BedWarsUtilsPlugin from "../../index.js";
-import type { CommandConstructor } from "../../types.js";
-import type { SessionType, UrchinSessionResponse, UrchinTagsResponse, UrchinWinstreakResopnse } from "./types.js";
+import type { BedWarsUtilsConfig } from "../types/config.ts";
+import type { CommandConstructor } from "../types/misc.ts";
+import type { SessionType, UrchinSessionResponse, UrchinTagsResponse, UrchinWinstreakResopnse } from "../types/urchin.ts";
 
 class UrchinManager extends BasicManager {
   static commands: CommandConstructor[] = [SessionsCommand, UrchinCommand, WinstreakCommand];
-  constructor(plugin: BedWarsUtilsPlugin, BASE_URL: string, API_KEY: string) {
-    super(plugin, BASE_URL, "Urchin", { "X-API-Key": API_KEY });
+  constructor(plugin: BedWarsUtilsPlugin, config: BedWarsUtilsConfig["urchin"]) {
+    super(plugin, config.baseUrl, "Urchin", { "X-API-Key": config.apiKey });
   }
 
   async getTags(query: string): Promise<UrchinTagsResponse | undefined> {

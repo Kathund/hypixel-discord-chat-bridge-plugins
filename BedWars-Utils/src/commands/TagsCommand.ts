@@ -18,14 +18,14 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
   static noTagReturn: string = "Clean";
 
   async getSeraphTag(UUID: string): Promise<string> {
-    if (!this.minecraft.plugin.seraph) return "UNKNOWN";
+    if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
     const data = await this.minecraft.plugin.seraph.getBlacklist(UUID);
     if (!data || data.data.blacklist.tagged === false) return TagsCommand.noTagReturn;
     return data.data.blacklist.report_type;
   }
 
   async getUrchinTag(UUID: string): Promise<string> {
-    if (!this.minecraft.plugin.urchin) return "UNKNOWN";
+    if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
     const data = await this.minecraft.plugin.urchin.getTags(UUID);
     if (!data || data.tags.length === 0) return TagsCommand.noTagReturn;
     const tag = data.tags[0];
@@ -34,7 +34,7 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
   }
 
   async getVegaTag(UUID: string): Promise<string> {
-    if (!this.minecraft.plugin.vega) return "UNKNOWN";
+    if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
     const data = await this.minecraft.plugin.vega.getBlacklist(UUID);
     if (!data || data.blacklisted === false) return TagsCommand.noTagReturn;
     return data.data.type;
