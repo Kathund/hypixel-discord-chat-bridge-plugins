@@ -6,7 +6,9 @@ import PreviousPageButton from "./src/buttons/PreviousPageButton.ts";
 import UpdateGexpLeaderboardScript from "./src/scripts/UpdateGexpLeaderboard.ts";
 import UpdateStatChannelsScriptNew from "./src/scripts/UpdateStatChannelsScriptNew.js";
 import ViewMoreButton from "./src/buttons/ViewMoreButton.ts";
+import assert from "node:assert";
 import { Application, BridgePlugin, type BridgePluginContext } from "hypixel-discord-chat-bridge/plugin-api";
+import type { MonthData } from "./types.ts";
 
 class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
   readonly data: DataManager;
@@ -48,6 +50,27 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
     this.#started = false;
     this.context.logger.info("Lunalia Utils plugin stopped.");
     return Promise.resolve();
+  }
+
+  getMonthData(): MonthData {
+    const months: MonthData[] = [
+      { hypixel: "01", full: "January" },
+      { hypixel: "02", full: "February" },
+      { hypixel: "03", full: "March" },
+      { hypixel: "04", full: "April" },
+      { hypixel: "05", full: "May" },
+      { hypixel: "06", full: "June" },
+      { hypixel: "07", full: "July" },
+      { hypixel: "08", full: "August" },
+      { hypixel: "09", full: "September" },
+      { hypixel: "10", full: "October" },
+      { hypixel: "11", full: "November" },
+      { hypixel: "12", full: "December" }
+    ];
+    const month = months[new Date().getUTCMonth()];
+    assert(month);
+    month.hypixel = `${new Date().getUTCFullYear()}-${month.hypixel}`;
+    return month;
   }
 }
 

@@ -67,7 +67,8 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     }
 
     const playerImages: Buffer[] = [];
-    playerImages.push(await this.scripts.application.minecraft.renderer.renderText("§l§eMonthly §fGexp Leaderboard", null, "modern"));
+    const month = this.scripts.plugin.getMonthData();
+    playerImages.push(await this.scripts.application.minecraft.renderer.renderText(`§l§eMonthly §fGexp Leaderboard for §l${month.full}`, null, "modern"));
 
     for (const user of users) {
       const parsed = await this.parseUser(user, users.indexOf(user) + 1);

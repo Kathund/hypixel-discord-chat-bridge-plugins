@@ -67,6 +67,13 @@ class UpdateStatChannelsScriptNew extends BasicScript<ScriptManagerWithPlugin<Lu
       if (!linked) continue;
       await this.scripts.plugin.data.gexpUserManager.saveGuildMember(member);
     }
+
+    const guildMemberUUIDs = stats.members.map((member) => member.uuid);
+    const users = await this.scripts.plugin.data.gexpUserManager.getFullData();
+    for (const user of users) {
+      if (guildMemberUUIDs.includes(user.uuid)) continue;
+      await this.scripts.plugin.data.gexpUserManager.deleteUser(user);
+    }
   }
 }
 

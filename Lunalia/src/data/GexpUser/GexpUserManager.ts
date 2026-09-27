@@ -55,17 +55,16 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
   }
 
   async saveGuildMember(member: GuildMember): Promise<GexpUser> {
-    const gexp: BasicGexpUserData["gexp"] = {};
-
+    const month = this.data.plugin.getMonthData();
     const currentData = await this.getUserByUUID(member.uuid);
-    if (currentData) Object.entries(currentData.gexp).forEach(([key, value]) => (gexp[key] = value));
-    member.expHistory
-      .filter(({ date }) => date !== undefined)
-      .forEach(
-        ({ day, exp, date }) => (gexp[Math.floor((date?.getTime() ?? 0) / 1000)?.toString() || "UNKNOWN"] = { day, exp, unix: Math.floor((date?.getTime() ?? 0) / 1000) })
-      );
+    const gexp: BasicGexpUserData["gexp"] = { ...currentData?.gexp };
+    for (const { day, exp, date } of member.expHistory) {
+      if (!date || !day.startsWith(month.hypixel)) continue;
+      const unix = Math.floor(date.getTime() / 1000);
+      gexp[unix.toString()] = { day, exp, unix };
+    }
 
-    return await new GexpUser({ trackingId: currentData?.trackingId, uuid: member.uuid, gexp }, this).save();
+    return new GexpUser({ trackingId: currentData?.trackingId, uuid: member.uuid, gexp }, this).save();
   }
 
   async getPage(page: number = 0, limit: number = 10): Promise<GexpUser[]> {

@@ -21,3 +21,8 @@ export interface BasicGexpUserData {
 export interface GexpUserData extends BasicGexpUserData {
   trackingId: string;
 }
+
+export interface MonthData {
+  hypixel: string;
+  full: string;
+}
