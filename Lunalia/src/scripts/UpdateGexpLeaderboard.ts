@@ -1,6 +1,6 @@
 import ms from "ms";
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { BasicScript, type ScriptManagerWithPlugin, formatNumber, intervalSchedule, messageToImage } from "hypixel-discord-chat-bridge/plugin-api";
+import { BasicScript, type ScriptManagerWithPlugin, formatNumber, intervalSchedule } from "hypixel-discord-chat-bridge/plugin-api";
 import { createCanvas, loadImage } from "canvas";
 import type GexpUser from "../data/GexpUser/GexpUser.ts";
 import type LunaliaPlugin from "../../index.js";
@@ -36,7 +36,11 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
   private async parseUser(user: GexpUser, pos: number): Promise<Buffer<ArrayBufferLike> | null> {
     const player = await user.getHypixelPlayer();
     if (!player) return null;
-    return await messageToImage(`§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.totalGexp)}`, player.nickname);
+    return await this.scripts.application.minecraft.renderer.renderText(
+      `§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.totalGexp)}`,
+      player.nickname,
+      "modern"
+    );
   }
 
   override async execute() {
@@ -63,6 +67,7 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     }
 
     const playerImages: Buffer[] = [];
+    playerImages.push(await this.scripts.application.minecraft.renderer.renderText("§l§eMonthly §fGexp Leaderboard", null, "modern"));
 
     for (const user of users) {
       const parsed = await this.parseUser(user, users.indexOf(user) + 1);
