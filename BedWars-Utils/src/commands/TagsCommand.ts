@@ -14,7 +14,7 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
     .setAliases(["tag"])
     .setDescription("Fetch tags")
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")])
-    .setAuthors(["Kathund"]);
+    .setAuthors(["Amber"]);
 
   static noTagReturn: string = "Clean";
 

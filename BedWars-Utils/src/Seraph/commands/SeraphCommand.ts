@@ -14,7 +14,7 @@ class SeraphCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsU
     .setName("seraph")
     .setDescription("Fetch seraph tags")
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")])
-    .setAuthors(["Kathund"]);
+    .setAuthors(["Amber"]);
 
   override async execute(player: string, message: string): Promise<void> {
     if (!this.minecraft.plugin.isFullyLoaded()) return await this.send("Seraph data wasn't loadded correctly");

@@ -37,7 +37,7 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     const player = await user.getHypixelPlayer();
     if (!player) return null;
     return await this.scripts.application.minecraft.renderer.renderText(
-      `§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.totalGexp)}`,
+      `§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.totalGexpThisMonth)}`,
       player.nickname,
       "modern"
     );
@@ -67,8 +67,9 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     }
 
     const playerImages: Buffer[] = [];
-    const month = this.scripts.plugin.getMonthData();
-    playerImages.push(await this.scripts.application.minecraft.renderer.renderText(`§l§eMonthly §fGexp Leaderboard for §l${month.full}`, null, "modern"));
+    playerImages.push(
+      await this.scripts.application.minecraft.renderer.renderText(`§l§eMonthly §fGexp Leaderboard for §l${this.scripts.plugin.getMonthName()}`, null, "modern")
+    );
 
     for (const user of users) {
       const parsed = await this.parseUser(user, users.indexOf(user) + 1);

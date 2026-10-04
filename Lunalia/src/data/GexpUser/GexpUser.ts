@@ -14,7 +14,7 @@ class GexpUser extends GenericData<GexpUserData> {
     super();
     this.trackingId = data.trackingId ?? crypto.randomUUID();
     this.uuid = removeDashesFromUUID(data.uuid);
-    this.gexp = Object.fromEntries(Object.entries(data.gexp).sort(([a], [b]) => Number(a) - Number(b)));
+    this.gexp = [...data.gexp].sort((a, b) => a.day.localeCompare(b.day));
   }
 
   async save(): Promise<GexpUser> {
@@ -44,7 +44,12 @@ class GexpUser extends GenericData<GexpUserData> {
   }
 
   get totalGexp(): number {
-    return Object.values(this.gexp).reduce((sum, entry) => sum + Number(entry.exp), 0);
+    return this.gexp.reduce((sum, entry) => sum + Number(entry.exp), 0);
+  }
+
+  get totalGexpThisMonth(): number {
+    const currentMonth = new Date().getUTCMonth();
+    return this.gexp.filter(({ day }) => new Date(day).getUTCMonth() === currentMonth).reduce((sum, entry) => sum + Number(entry.exp), 0);
   }
 }
 

@@ -20,7 +20,7 @@ class SessionsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWar
     .setAliases([...SessionTypes])
     .setDescription("Fetch BedWars sessions from urchin")
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")])
-    .setAuthors(["Kathund"]);
+    .setAuthors(["Amber"]);
 
   convertMode(mode: BedWarsModeName): BedWarsInternalName {
     switch (mode) {

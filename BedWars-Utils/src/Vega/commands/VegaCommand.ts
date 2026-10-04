@@ -14,7 +14,7 @@ class VegaCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
     .setName("vega")
     .setDescription("Fetch vega tags")
     .setOptions([new MinecraftCommandDataOption().setName("username").setDescription("Minecraft Username")])
-    .setAuthors(["Kathund"]);
+    .setAuthors(["Amber"]);
 
   override async execute(player: string, message: string): Promise<void> {
     if (!this.minecraft.plugin.isFullyLoaded()) return await this.send("Vega data wasn't loadded correctly");

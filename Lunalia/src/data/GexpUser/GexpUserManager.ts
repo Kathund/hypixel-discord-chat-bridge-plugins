@@ -1,7 +1,7 @@
 import GexpUser from "./GexpUser.js";
 import { ActionRowBuilder, type BaseMessageOptions, ButtonBuilder, ButtonStyle, ComponentType, Message } from "discord.js";
-import { type BasicGexpUserData, type GexpData, GexpDataSchema, type GexpUserData } from "../../../types.ts";
 import { EmbedHelper, GenericManager, HypixelDiscordChatBridgeError, MowojangAPI, formatNumber } from "hypixel-discord-chat-bridge/plugin-api";
+import { type GexpData, GexpDataSchema, type GexpUserData } from "../../../types.ts";
 import { GuildMember, removeDashesFromUUID } from "hypixel-api-reborn";
 import type DataManager from "../DataManager.js";
 
@@ -55,40 +55,31 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
   }
 
   async saveGuildMember(member: GuildMember): Promise<GexpUser> {
-    const month = this.data.plugin.getMonthData();
     const currentData = await this.getUserByUUID(member.uuid);
-    const currentGexp: BasicGexpUserData["gexp"] = { ...currentData?.gexp };
-    for (const { day, exp, date } of member.expHistory) {
-      if (!date || !day.startsWith(`${new Date().getUTCFullYear()}-${month.hypixel}`)) continue;
-      const unix = Math.floor(date.getTime() / 1000);
-      currentGexp[unix.toString()] = { day, exp, unix };
-    }
+    const currentGexp = new Map((currentData?.gexp ?? []).map((entry) => [entry.day, entry]));
+    for (const entry of member.expHistory) currentGexp.set(entry.day, entry);
 
-    const gexp: BasicGexpUserData["gexp"] = {};
-    Object.entries(currentGexp).forEach(([key, value]) => {
-      if (key.endsWith("1")) return;
-      gexp[key] = value;
-    });
-
-    return new GexpUser({ trackingId: currentData?.trackingId, uuid: member.uuid, gexp }, this).save();
+    return new GexpUser({ trackingId: currentData?.trackingId, uuid: member.uuid, gexp: [...currentGexp.values()] }, this).save();
   }
 
   async getPage(page: number = 0, limit: number = 10): Promise<GexpUser[]> {
     return await this.getFullData().then((users) =>
       users
-        .filter((user) => user.totalGexp !== 0)
-        .sort((a, b) => b.totalGexp - a.totalGexp)
+        .filter((user) => user.totalGexpThisMonth !== 0)
+        .sort((a, b) => b.totalGexpThisMonth - a.totalGexpThisMonth)
         .slice(page * limit, (page + 1) * limit)
     );
   }
 
   async getMaxPageNumber(limit: number = 10): Promise<number> {
-    const users = await this.getFullData().then((users) => users.filter((user) => user.totalGexp !== 0));
+    const users = await this.getFullData().then((users) => users.filter((user) => user.totalGexpThisMonth !== 0));
     return Math.max(1, Math.ceil(users.length / limit));
   }
 
   async getPageForUser(uuid: string, limit: number = 10): Promise<number | null> {
-    const users = await this.getFullData().then((users) => users.filter((user) => user.totalGexp !== 0).sort((a, b) => b.totalGexp - a.totalGexp));
+    const users = await this.getFullData().then((users) =>
+      users.filter((user) => user.totalGexpThisMonth !== 0).sort((a, b) => b.totalGexpThisMonth - a.totalGexpThisMonth)
+    );
     const index = users.findIndex((user) => user.uuid === uuid);
     if (index === -1) return null;
     return Math.floor(index / limit);
@@ -104,7 +95,7 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
   async parseUser(user: GexpUser, pos: number, highlightUUID: string | undefined = undefined): Promise<string> {
     const username = (await user.getUsername()) ?? "UNKNOWN";
     const shouldHighlight = user.uuid === highlightUUID;
-    return `${shouldHighlight ? "**__" : ""}${this.getEmoji(pos)} • ${pos}. ${username.replaceAll("_", "\\_")}: ${formatNumber(user.totalGexp)}${shouldHighlight ? "__**" : ""}`;
+    return `${shouldHighlight ? "**__" : ""}${this.getEmoji(pos)} • ${pos}. ${username.replaceAll("_", "\\_")}: ${formatNumber(user.totalGexpThisMonth)}${shouldHighlight ? "__**" : ""}`;
   }
 
   async getViewMoreResponse(page: number = 0, userId: string | null = null): Promise<BaseMessageOptions> {
@@ -119,7 +110,7 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
     const parsedUsers: string[] = [];
     for (const user of users) parsedUsers.push(await this.parseUser(user, users.indexOf(user) + 1 + page * 10, highlightUUID));
     return {
-      embeds: [new EmbedHelper().setTitle("Gexp Leaderboard").setDescription(parsedUsers.join("\n")).setDevFooter("Kathund")],
+      embeds: [new EmbedHelper().setTitle("Gexp Leaderboard").setDescription(parsedUsers.join("\n")).setDevFooter("Amber")],
       components: [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()

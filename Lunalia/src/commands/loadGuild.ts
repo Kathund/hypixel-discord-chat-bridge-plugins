@@ -21,7 +21,7 @@ class LoadGuildCommand extends DiscordCommand<DiscordManagerWithPlugin<LunaliaPl
     const guild = await getGuild("name", interaction.options.getString("name", true));
     if (!guild) throw new HypixelDiscordChatBridgeError("Invalid guild");
     for (const member of guild.members) await this.discord.plugin.data.gexpUserManager.saveGuildMember(member);
-    await interaction.followUp({ embeds: [new SuccessEmbed().setDevFooter("Kathund").setDescription(`Loaded ${guild.members.length} idiot(s) from ${guild.name}`)] });
+    await interaction.followUp({ embeds: [new SuccessEmbed().setDevFooter("Amber").setDescription(`Loaded ${guild.members.length} idiot(s) from ${guild.name}`)] });
   }
 }
 
