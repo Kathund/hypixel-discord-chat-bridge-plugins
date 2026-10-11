@@ -1,4 +1,5 @@
 import ConfigManager from "./src/ConfigManager.ts";
+import DebugCommand from "./src/commands/debug.ts";
 import RefreshDataButton from "./src/buttons/RefreshDataButton.ts";
 import RestartApplicationButton from "./src/buttons/RestartApplicationButton.ts";
 import UpdateBotStatusMessageScript from "./src/scripts/UpdateBotStatusMessageScript.ts";
@@ -21,6 +22,7 @@ class BotStatusPlugin extends BridgePlugin<BotStatusPlugin> {
   override registerExtensions(): Promise<void> {
     if (!this.enabled) return Promise.resolve();
     this.context.registerButton((discord) => new RefreshDataButton(discord));
+    this.context.registerDiscordCommand((discord) => new DebugCommand(discord));
     this.context.registerButton((discord) => new RestartApplicationButton(discord));
     this.context.registerScript((scripts) => new UpdateBotStatusMessageScript(scripts));
     return Promise.resolve();
