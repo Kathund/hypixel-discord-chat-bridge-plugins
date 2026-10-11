@@ -86,6 +86,7 @@ class BotStatusPlugin extends BridgePlugin<BotStatusPlugin> {
       content: "",
       embeds: [
         new EmbedHelper()
+          .setTitle("Debug Information")
           .setThumbnail(`${this.application.config.API.nmsr.baseURL}/face/${this.application.minecraft.bot?.username ?? "kathund"}`)
           .setFields(
             { name: "Bot Connected To Hypixel", value: this.application.minecraft.isBotOnline() ? ":white_check_mark: Yes" : ":x: No" },
