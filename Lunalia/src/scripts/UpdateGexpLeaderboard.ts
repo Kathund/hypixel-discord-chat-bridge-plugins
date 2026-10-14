@@ -3,7 +3,7 @@ import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle } from 
 import { BasicScript, type ScriptManagerWithPlugin, formatNumber, intervalSchedule } from "hypixel-discord-chat-bridge/plugin-api";
 import { createCanvas, loadImage } from "canvas";
 import type GexpUser from "../data/GexpUser/GexpUser.ts";
-import type LunaliaPlugin from "../../index.js";
+import type LunaliaPlugin from "../../index.ts";
 import type { Player } from "hypixel-api-reborn";
 
 class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<LunaliaPlugin>> {

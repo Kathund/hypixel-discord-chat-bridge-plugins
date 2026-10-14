@@ -5,7 +5,7 @@ class AutoFriendPlugin extends BridgePlugin<AutoFriendPlugin> {
     name: "AutoFriend",
     description: "Automatically accepts incoming friends",
     version: "1.0.0",
-    author: "kathund",
+    author: "Amber",
     link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/AutoFriend"
   } as const;
   #started: boolean = false;

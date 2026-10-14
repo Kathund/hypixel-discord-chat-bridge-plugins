@@ -1,5 +1,5 @@
 import { type ButtonInteractionWithGuild, ButtonResponse, DiscordButton, DiscordButtonData, type DiscordManagerWithPlugin } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.js";
+import type LunaliaPlugin from "../../index.ts";
 
 class PreviousPageButton extends DiscordButton<DiscordManagerWithPlugin<LunaliaPlugin>> {
   override readonly data = new DiscordButtonData("viewMoreGexpLeaderboardPrevious");

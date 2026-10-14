@@ -1,7 +1,7 @@
 import { GenericData, HypixelDiscordChatBridgeError, MowojangAPI, getPlayer } from "hypixel-discord-chat-bridge/plugin-api";
 import { type Guild, type GuildMember, type Player, removeDashesFromUUID } from "hypixel-api-reborn";
-import type GexpUserManager from "./GexpUserManager.js";
-import type { BasicGexpUserData, GexpUserData } from "../../../types.js";
+import type GexpUserManager from "./GexpUserManager.ts";
+import type { BasicGexpUserData, GexpUserData } from "../../../types.ts";
 
 class GexpUser extends GenericData<GexpUserData> {
   readonly trackingId: GexpUserData["trackingId"];

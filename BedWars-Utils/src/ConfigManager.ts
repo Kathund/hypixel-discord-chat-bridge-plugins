@@ -1,5 +1,5 @@
 import { BasicConfigManager, ConfigChangeType, type MigrationMap } from "hypixel-discord-chat-bridge/plugin-api";
-import { BedWarsUtilsConfig } from "./types/config.js";
+import { BedWarsUtilsConfig } from "./types/config.ts";
 
 class ConfigManager extends BasicConfigManager<BedWarsUtilsConfig> {
   protected readonly configPath = "plugins/BedWars-Utils/config.json";

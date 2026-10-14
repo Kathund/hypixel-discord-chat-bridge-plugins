@@ -7,7 +7,7 @@ import {
   type DiscordManagerWithPlugin,
   HypixelDiscordChatBridgeError
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.js";
+import type LunaliaPlugin from "../../index.ts";
 
 class GoToSelfButton extends DiscordButton<DiscordManagerWithPlugin<LunaliaPlugin>> {
   override readonly data = new DiscordButtonData("viewMoreGexpLeaderboardSelf");

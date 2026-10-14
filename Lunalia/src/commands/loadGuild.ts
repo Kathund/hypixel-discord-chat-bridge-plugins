@@ -8,7 +8,7 @@ import {
   SuccessEmbed,
   getGuild
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.js";
+import type LunaliaPlugin from "../../index.ts";
 
 class LoadGuildCommand extends DiscordCommand<DiscordManagerWithPlugin<LunaliaPlugin>> {
   override readonly data = new DiscordCommandDataBuilder()

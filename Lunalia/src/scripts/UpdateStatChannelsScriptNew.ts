@@ -7,7 +7,7 @@ import {
   intervalSchedule,
   replaceVariables
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.js";
+import type LunaliaPlugin from "../../index.ts";
 import type { GuildMember } from "hypixel-api-reborn";
 
 interface StatsWithMembers {

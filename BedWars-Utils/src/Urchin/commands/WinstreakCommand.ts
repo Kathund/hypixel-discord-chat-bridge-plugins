@@ -6,7 +6,7 @@ import {
   MowojangAPI,
   getMostRecent
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "../../../index.js";
+import type BedWarsUtilsPlugin from "../../../index.ts";
 import type { ParsedUrchinWinstreaks, UrchinWinstreakMode, UrchinWinstreakModes } from "../../types/urchin.ts";
 
 class WinstreakCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUtilsPlugin>> {

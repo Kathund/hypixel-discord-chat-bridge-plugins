@@ -1,9 +1,9 @@
-import GexpUser from "./GexpUser.js";
+import GexpUser from "./GexpUser.ts";
 import { ActionRowBuilder, type BaseMessageOptions, ButtonBuilder, ButtonStyle, ComponentType, Message } from "discord.js";
 import { EmbedHelper, GenericManager, HypixelDiscordChatBridgeError, MowojangAPI, formatNumber } from "hypixel-discord-chat-bridge/plugin-api";
 import { type GexpData, GexpDataSchema, type GexpUserData } from "../../../types.ts";
 import { GuildMember, removeDashesFromUUID } from "hypixel-api-reborn";
-import type DataManager from "../DataManager.js";
+import type DataManager from "../DataManager.ts";
 
 class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, DataManager> {
   constructor(data: DataManager) {

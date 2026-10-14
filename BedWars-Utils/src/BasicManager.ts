@@ -1,7 +1,7 @@
 import axios, { AxiosError, HttpStatusCode } from "axios";
 import ms, { type StringValue } from "ms";
 import { HypixelDiscordChatBridgeError } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "../index.js";
+import type BedWarsUtilsPlugin from "../index.ts";
 
 class BasicManager {
   protected cacheDuration: number = ms("5m");

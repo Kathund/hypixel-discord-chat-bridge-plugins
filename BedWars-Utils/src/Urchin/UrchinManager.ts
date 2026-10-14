@@ -1,9 +1,9 @@
 import BasicManager from "../BasicManager.ts";
-import SessionsCommand from "./commands/SessionCommand.js";
-import UrchinCommand from "./commands/UrchinCommand.js";
-import WinstreakCommand from "./commands/WinstreakCommand.js";
+import SessionsCommand from "./commands/SessionCommand.ts";
+import UrchinCommand from "./commands/UrchinCommand.ts";
+import WinstreakCommand from "./commands/WinstreakCommand.ts";
 import { BedWars } from "hypixel-api-reborn";
-import type BedWarsUtilsPlugin from "../../index.js";
+import type BedWarsUtilsPlugin from "../../index.ts";
 import type { BedWarsUtilsConfig } from "../types/config.ts";
 import type { CommandConstructor } from "../types/misc.ts";
 import type { SessionType, UrchinSessionResponse, UrchinTagsResponse, UrchinWinstreakResopnse } from "../types/urchin.ts";

@@ -1,7 +1,7 @@
 import BasicManager from "../BasicManager.ts";
-import PingCommand from "./commands/PingCommand.js";
-import VegaCommand from "./commands/VegaCommand.js";
-import type BedWarsUtilsPlugin from "../../index.js";
+import PingCommand from "./commands/PingCommand.ts";
+import VegaCommand from "./commands/VegaCommand.ts";
+import type BedWarsUtilsPlugin from "../../index.ts";
 import type { BedWarsUtilsConfig } from "../types/config.ts";
 import type { CommandConstructor } from "../types/misc.ts";
 import type { VegaBlacklistResponse, VegaPingResponse } from "../types/vega.ts";

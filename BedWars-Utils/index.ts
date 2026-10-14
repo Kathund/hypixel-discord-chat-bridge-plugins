@@ -1,19 +1,19 @@
 import ConfigManager from "./src/ConfigManager.ts";
-import SeraphManager from "./src/Seraph/SeraphManager.js";
-import TagsCommand from "./src/commands/TagsCommand.js";
-import UrchinManager from "./src/Urchin/UrchinManager.js";
-import VegaManager from "./src/Vega/VegaManager.js";
+import SeraphManager from "./src/Seraph/SeraphManager.ts";
+import TagsCommand from "./src/commands/TagsCommand.ts";
+import UrchinManager from "./src/Urchin/UrchinManager.ts";
+import VegaManager from "./src/Vega/VegaManager.ts";
 import { BridgePlugin, MowojangAPI } from "hypixel-discord-chat-bridge/plugin-api";
 import { Errors, HypixelAPIRebornError, isUUID } from "hypixel-api-reborn";
-import type { BedWarsUtilsPluginWithData, CommandConstructor } from "./src/types/misc.ts";
 import type { BedWarsUtilsConfig } from "./src/types/config.ts";
+import type { BedWarsUtilsPluginWithData, CommandConstructor } from "./src/types/misc.ts";
 
 class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   override readonly metadata = {
     name: "BedWars Utils",
     description: "Adds BedWars related commands to in game minecraft commands",
     version: "2.0.0",
-    author: "kathund",
+    author: "Amber",
     link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/BedWars-Utils"
   } as const;
   #started: boolean = false;
@@ -56,8 +56,10 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
     return Promise.resolve();
   }
 
-  // I love skidding my own code
-  // Credit: https://github.com/Hypixel-API-Reborn/hypixel-api-reborn/blob/35e4537a420cf731083b9bdb2ca37776304f4c60/src/Private/RequestHandler.ts#L76-L83
+  /*
+   * I love skidding my own code
+   * Credit: https://github.com/Hypixel-API-Reborn/hypixel-api-reborn/blob/35e4537a420cf731083b9bdb2ca37776304f4c60/src/Private/RequestHandler.ts#L76-L83
+   */
   async toUUID(input: string): Promise<string> {
     if (!input) throw new HypixelAPIRebornError(Errors.NO_NICKNAME_UUID);
     if (typeof input !== "string") throw new HypixelAPIRebornError(Errors.UUID_NICKNAME_MUST_BE_A_STRING);

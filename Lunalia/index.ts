@@ -1,16 +1,22 @@
-import DataManager from "./src/data/DataManager.js";
+import DataManager from "./src/data/DataManager.ts";
 import GoToSelfButton from "./src/buttons/GoToSelfButton.ts";
 import LoadGuildCommand from "./src/commands/loadGuild.ts";
 import NextPageButton from "./src/buttons/NextPageButton.ts";
 import PreviousPageButton from "./src/buttons/PreviousPageButton.ts";
 import UpdateGexpLeaderboardScript from "./src/scripts/UpdateGexpLeaderboard.ts";
-import UpdateStatChannelsScriptNew from "./src/scripts/UpdateStatChannelsScriptNew.js";
+import UpdateStatChannelsScriptNew from "./src/scripts/UpdateStatChannelsScriptNew.ts";
 import ViewMoreButton from "./src/buttons/ViewMoreButton.ts";
 import { Application, BridgePlugin, type BridgePluginContext } from "hypixel-discord-chat-bridge/plugin-api";
 
 class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
   readonly data: DataManager;
-  override readonly metadata = { name: "Lunalia Utils", description: "Lunalia plugin shit", version: "1.0.0", author: "kathund" } as const;
+  override readonly metadata = {
+    name: "Lunalia Utils",
+    description: "Stuff for the lunalia guild",
+    version: "1.0.0",
+    author: "Amber",
+    link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/Lunalia"
+  } as const;
   #started: boolean = false;
   private enabled: boolean = false;
 

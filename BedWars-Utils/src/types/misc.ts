@@ -1,5 +1,5 @@
 import { type MinecraftCommand, type MinecraftManagerWithPlugin } from "hypixel-discord-chat-bridge/plugin-api";
-import type BedWarsUtilsPlugin from "../../index.js";
+import type BedWarsUtilsPlugin from "../../index.ts";
 import type SeraphManager from "../Seraph/SeraphManager.ts";
 import type UrchinManager from "../Urchin/UrchinManager.ts";
 import type VegaManager from "../Vega/VegaManager.ts";

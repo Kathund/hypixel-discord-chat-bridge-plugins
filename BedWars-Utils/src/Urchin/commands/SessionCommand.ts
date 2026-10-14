@@ -11,7 +11,7 @@ import {
   titleCase
 } from "hypixel-discord-chat-bridge/plugin-api";
 import { SessionTypes, isSessionTypeName } from "../../types/urchin.ts";
-import type BedWarsUtilsPlugin from "../../../index.js";
+import type BedWarsUtilsPlugin from "../../../index.ts";
 import type { BedWars, BedWarsMode } from "hypixel-api-reborn";
 
 class SessionsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUtilsPlugin>> {
