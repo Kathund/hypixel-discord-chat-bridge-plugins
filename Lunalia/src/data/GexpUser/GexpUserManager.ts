@@ -62,11 +62,11 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
     return new GexpUser({ trackingId: currentData?.trackingId, uuid: member.uuid, gexp: [...currentGexp.values()] }, this).save();
   }
 
-  async getPage(page: number = 0, limit: number = 10): Promise<GexpUser[]> {
+  async getPage(page: number = 0, limit: number = 10, month: number = new Date().getUTCMonth(), year: number = new Date().getUTCFullYear()): Promise<GexpUser[]> {
     return await this.getFullData().then((users) =>
       users
-        .filter((user) => user.totalGexpThisMonth !== 0)
-        .sort((a, b) => b.totalGexpThisMonth - a.totalGexpThisMonth)
+        .filter((user) => user.getTotalGexpForMonth(month, year) !== 0)
+        .sort((a, b) => b.getTotalGexpForMonth(month, year) - a.getTotalGexpForMonth(month, year))
         .slice(page * limit, (page + 1) * limit)
     );
   }

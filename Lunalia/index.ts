@@ -5,6 +5,7 @@ import NextPageButton from "./src/buttons/NextPageButton.ts";
 import PreviousPageButton from "./src/buttons/PreviousPageButton.ts";
 import UpdateGexpLeaderboardScript from "./src/scripts/UpdateGexpLeaderboard.ts";
 import UpdateStatChannelsScriptNew from "./src/scripts/UpdateStatChannelsScriptNew.ts";
+import ViewMonthCommand from "./src/commands/viewMonth.ts";
 import ViewMoreButton from "./src/buttons/ViewMoreButton.ts";
 import { Application, BridgePlugin, type BridgePluginContext } from "hypixel-discord-chat-bridge/plugin-api";
 
@@ -29,6 +30,7 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
   override registerExtensions(): Promise<void> {
     if (!this.enabled) return Promise.resolve();
     this.context.registerDiscordCommand((discord) => new LoadGuildCommand(discord));
+    this.context.registerDiscordCommand((discord) => new ViewMonthCommand(discord));
     this.context.registerButton((discord) => new GoToSelfButton(discord));
     this.context.registerButton((discord) => new NextPageButton(discord));
     this.context.registerButton((discord) => new PreviousPageButton(discord));
@@ -56,9 +58,9 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
     return Promise.resolve();
   }
 
-  getMonthName(): string {
-    const months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Decembe"];
-    return months[new Date().getUTCMonth()] ?? "UNKNOWN";
+  getMonthName(month: number = new Date().getUTCMonth()): string {
+    const months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return months[month] ?? "UNKNOWN";
   }
 }
 

@@ -33,14 +33,37 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
     return `§7${player.nickname}`;
   }
 
-  private async parseUser(user: GexpUser, pos: number): Promise<Buffer<ArrayBufferLike> | null> {
+  private async parseUser(user: GexpUser, pos: number, month: number, year: number): Promise<Buffer<ArrayBufferLike> | null> {
     const player = await user.getHypixelPlayer();
     if (!player) return null;
     return await this.scripts.application.minecraft.renderer.renderText(
-      `§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.totalGexpThisMonth)}`,
+      `§e${pos}. {skin} ${this.parseUsername(player)}§r§f: ${formatNumber(user.getTotalGexpForMonth(month, year))}`,
       player.nickname,
       "modern"
     );
+  }
+
+  async generateLeaderboardImage(
+    monthName: string,
+    users: GexpUser[],
+    month: number = new Date().getUTCMonth(),
+    year: number = new Date().getUTCFullYear()
+  ): Promise<Buffer> {
+    const playerImages: Buffer[] = [await this.scripts.application.minecraft.renderer.renderText(`§l§eMonthly §fGexp Leaderboard for §l${monthName}`, null, "modern")];
+
+    for (const [index, user] of users.entries()) {
+      const parsed = await this.parseUser(user, index + 1, month, year);
+      if (parsed) playerImages.push(parsed);
+    }
+
+    const images = await Promise.all(playerImages.map((image) => loadImage(image)));
+    const width = images[0]?.width ?? 1000;
+    const height = images[0]?.height ?? 50;
+    const canvas = createCanvas(width, height * images.length);
+    const ctx = canvas.getContext("2d");
+    for (const [index, image] of images.entries()) ctx.drawImage(image, 0, index * height, width, height);
+
+    return canvas.toBuffer("image/png");
   }
 
   override async execute() {
@@ -66,25 +89,8 @@ class UpdateGexpLeaderboardScript extends BasicScript<ScriptManagerWithPlugin<Lu
       return;
     }
 
-    const playerImages: Buffer[] = [];
-    playerImages.push(
-      await this.scripts.application.minecraft.renderer.renderText(`§l§eMonthly §fGexp Leaderboard for §l${this.scripts.plugin.getMonthName()}`, null, "modern")
-    );
-
-    for (const user of users) {
-      const parsed = await this.parseUser(user, users.indexOf(user) + 1);
-      if (parsed) playerImages.push(parsed);
-    }
-
-    if (playerImages.length === 0) return;
-    const images = await Promise.all(playerImages.map((image) => loadImage(image)));
-    const width = images[0]?.width ?? 1000;
-    const height = images[0]?.height ?? 50;
-    const canvas = createCanvas(width, height * images.length);
-    const ctx = canvas.getContext("2d");
-    for (const image of images) ctx.drawImage(image, 0, images.indexOf(image) * height, width, height);
-
-    await leaderboardMessage.edit({ content: null, files: [new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "leaderboard.png" })], components: [] });
+    const leaderboardImage = await this.generateLeaderboardImage(this.scripts.plugin.getMonthName(), users);
+    await leaderboardMessage.edit({ content: null, files: [new AttachmentBuilder(leaderboardImage, { name: "leaderboard.png" })], components: [] });
     await leaderboardInfoMessage.edit({
       content: `**Last Updated:** <t:${unix}:F> (<t:${unix}:R>)\n**Next Update:** <t:${nextUnix}:F> (<t:${nextUnix}:R>)`,
       components: [
