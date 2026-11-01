@@ -56,9 +56,9 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
     return Promise.resolve();
   }
 
-  getMonthName(): string {
+  getMonthName(month: number = new Date().getUTCMonth()): string {
     const months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Decembe"];
-    return months[new Date().getUTCMonth()] ?? "UNKNOWN";
+    return months[month] ?? "UNKNOWN";
   }
 }
 

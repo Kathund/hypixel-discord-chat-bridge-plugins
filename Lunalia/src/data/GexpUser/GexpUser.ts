@@ -47,9 +47,22 @@ class GexpUser extends GenericData<GexpUserData> {
     return this.gexp.reduce((sum, entry) => sum + Number(entry.exp), 0);
   }
 
+  getTotalGexpForMonth(month: number, year = new Date().getUTCFullYear()): number {
+    if (!Number.isInteger(month) || month < 1 || month > 12) {
+      throw new RangeError("Month must be an integer from 1 to 12");
+    }
+
+    return this.gexp
+      .filter(({ day }) => {
+        const date = new Date(day);
+        return date.getUTCMonth() === month - 1 && date.getUTCFullYear() === year;
+      })
+      .reduce((sum, entry) => sum + Number(entry.exp), 0);
+  }
+
   get totalGexpThisMonth(): number {
-    const currentMonth = new Date().getUTCMonth();
-    return this.gexp.filter(({ day }) => new Date(day).getUTCMonth() === currentMonth).reduce((sum, entry) => sum + Number(entry.exp), 0);
+    const now = new Date();
+    return this.getTotalGexpForMonth(now.getUTCMonth() + 1, now.getUTCFullYear());
   }
 }
 
