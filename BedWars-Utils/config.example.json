@@ -4,10 +4,6 @@
     "baseUrl": "https://api.urchin.gg/v3",
     "apiKey": "URCHIN_API_KEY"
   },
-  "seraph": {
-    "baseUrl": "https://api.seraph.si",
-    "apiKey": "SERAPH_API_KEY"
-  },
   "vega": {
     "baseUrl": "https://bordic.xyz/api/v2"
   },

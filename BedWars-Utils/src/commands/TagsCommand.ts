@@ -18,14 +18,7 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
 
   static noTagReturn: string = "Clean";
 
-  async getSeraphTag(UUID: string): Promise<string> {
-    if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
-    const data = await this.minecraft.plugin.seraph.getBlacklist(UUID);
-    if (!data || data.data.blacklist.tagged === false) return TagsCommand.noTagReturn;
-    return data.data.blacklist.report_type;
-  }
-
-  async getUrchinTag(UUID: string): Promise<string> {
+  private async getUrchinTag(UUID: string): Promise<string> {
     if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
     const data = await this.minecraft.plugin.urchin.getTags(UUID);
     if (!data || data.tags.length === 0) return TagsCommand.noTagReturn;
@@ -34,7 +27,7 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
     return tag.tag_type;
   }
 
-  async getVegaTag(UUID: string): Promise<string> {
+  private async getVegaTag(UUID: string): Promise<string> {
     if (!this.minecraft.plugin.isFullyLoaded()) return "UNKNOWN";
     const data = await this.minecraft.plugin.vega.getBlacklist(UUID);
     if (!data || data.blacklisted === false) return TagsCommand.noTagReturn;
@@ -47,7 +40,6 @@ class TagsCommand extends MinecraftCommand<MinecraftManagerWithPlugin<BedWarsUti
     if (profile.data === null) return await this.send(`${player} does not exist!`);
 
     const tagSources = [
-      ["seraph", this.getSeraphTag(profile.data.UUID)],
       ["urchin", this.getUrchinTag(profile.data.UUID)],
       ["vega", this.getVegaTag(profile.data.UUID)]
     ] as const;

@@ -1,5 +1,4 @@
 import ConfigManager from "./src/ConfigManager.ts";
-import SeraphManager from "./src/Seraph/SeraphManager.ts";
 import TagsCommand from "./src/commands/TagsCommand.ts";
 import UrchinManager from "./src/Urchin/UrchinManager.ts";
 import VegaManager from "./src/Vega/VegaManager.ts";
@@ -19,10 +18,9 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   #started: boolean = false;
 
   static TagTrimLength: number = 200;
-  static commands: CommandConstructor[] = [TagsCommand, ...SeraphManager.commands, ...UrchinManager.commands, ...VegaManager.commands];
+  static commands: CommandConstructor[] = [TagsCommand, ...UrchinManager.commands, ...VegaManager.commands];
   readonly cache = new Map<string, { data: unknown; expiresAt: number }>();
   config?: BedWarsUtilsConfig;
-  seraph?: SeraphManager;
   urchin?: UrchinManager;
   vega?: VegaManager;
 
@@ -43,7 +41,6 @@ class BedWarsUtilsPlugin extends BridgePlugin<BedWarsUtilsPlugin> {
   private async loadData(): Promise<boolean> {
     const configManager = new ConfigManager();
     this.config = await configManager.init();
-    this.seraph = new SeraphManager(this, this.config.seraph);
     this.urchin = new UrchinManager(this, this.config.urchin);
     this.vega = new VegaManager(this, this.config.urchin);
     return true;
