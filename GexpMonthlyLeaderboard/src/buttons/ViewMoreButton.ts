@@ -1,8 +1,8 @@
 import { type ButtonInteractionWithGuild, ButtonResponse, DiscordButton, DiscordButtonData, type DiscordManagerWithPlugin } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.ts";
+import type GexpMonthlyLeaderboardPlugin from "../../index.ts";
 
-class ViewMoreButton extends DiscordButton<DiscordManagerWithPlugin<LunaliaPlugin>> {
-  override readonly data = new DiscordButtonData("viewMoreGexpLeaderboard");
+class ViewMoreButton extends DiscordButton<DiscordManagerWithPlugin<GexpMonthlyLeaderboardPlugin>> {
+  override readonly data = new DiscordButtonData("gexpMonthlyLeaderboardViewMore");
   override readonly response = ButtonResponse.Ephemeral;
 
   override async execute(interaction: ButtonInteractionWithGuild): Promise<void> {

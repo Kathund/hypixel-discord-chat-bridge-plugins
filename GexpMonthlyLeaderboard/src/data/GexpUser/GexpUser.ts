@@ -4,9 +4,10 @@ import type GexpUserManager from "./GexpUserManager.ts";
 import type { BasicGexpUserData, GexpUserData } from "../../../types.ts";
 
 class GexpUser extends GenericData<GexpUserData> {
-  readonly trackingId: GexpUserData["trackingId"];
-  readonly uuid: BasicGexpUserData["uuid"];
+  readonly trackingId: string;
+  readonly uuid: string;
   readonly gexp: BasicGexpUserData["gexp"];
+
   constructor(
     data: BasicGexpUserData,
     private readonly manager: GexpUserManager
@@ -43,10 +44,6 @@ class GexpUser extends GenericData<GexpUserData> {
     return { trackingId: this.trackingId, uuid: this.uuid, gexp: this.gexp };
   }
 
-  get totalGexp(): number {
-    return this.gexp.reduce((sum, entry) => sum + Number(entry.exp), 0);
-  }
-
   getTotalGexpForMonth(month: number, year = new Date().getUTCFullYear()): number {
     if (!Number.isInteger(month) || month < 0 || month > 11) {
       throw new RangeError("Month must be an integer from 0 to 11");
@@ -58,11 +55,6 @@ class GexpUser extends GenericData<GexpUserData> {
         return date.getUTCMonth() === month && date.getUTCFullYear() === year;
       })
       .reduce((sum, entry) => sum + Number(entry.exp), 0);
-  }
-
-  get totalGexpThisMonth(): number {
-    const now = new Date();
-    return this.getTotalGexpForMonth(now.getUTCMonth(), now.getUTCFullYear());
   }
 }
 

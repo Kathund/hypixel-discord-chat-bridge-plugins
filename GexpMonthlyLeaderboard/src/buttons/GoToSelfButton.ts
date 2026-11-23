@@ -7,22 +7,19 @@ import {
   type DiscordManagerWithPlugin,
   HypixelDiscordChatBridgeError
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.ts";
+import type GexpMonthlyLeaderboardPlugin from "../../index.ts";
 
-class GoToSelfButton extends DiscordButton<DiscordManagerWithPlugin<LunaliaPlugin>> {
-  override readonly data = new DiscordButtonData("viewMoreGexpLeaderboardSelf");
+class GoToSelfButton extends DiscordButton<DiscordManagerWithPlugin<GexpMonthlyLeaderboardPlugin>> {
+  override readonly data = new DiscordButtonData("gexpMonthlyLeaderboardSelf");
   override readonly response = ButtonResponse.Update;
   override flags: readonly CommandFlags[] = [CommandFlags.VerificationCommand];
 
   override async execute(interaction: ButtonInteractionWithGuild): Promise<void> {
     const linked = await this.discord.plugin.application.data.linked.getUserByDiscordId(interaction.user.id);
-    if (linked === undefined) throw new HypixelDiscordChatBridgeError("You aren't verified");
-    await interaction.editReply(
-      await this.discord.plugin.data.gexpUserManager.getViewMoreResponse(
-        (await this.discord.plugin.data.gexpUserManager.getPageForUser(linked.uuid)) ?? 0,
-        interaction.user.id
-      )
-    );
+    if (!linked) throw new HypixelDiscordChatBridgeError("You aren't verified");
+
+    const page = (await this.discord.plugin.data.gexpUserManager.getPageForUser(linked.uuid)) ?? 0;
+    await interaction.editReply(await this.discord.plugin.data.gexpUserManager.getViewMoreResponse(page, interaction.user.id));
   }
 }
 

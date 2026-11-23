@@ -1,0 +1,9 @@
+{
+  "configVersion": 1,
+  "discord": {
+    "channelId": null,
+    "leaderboardMessageId": null,
+    "leaderboardInfoMessageId": null
+  }
+}
+

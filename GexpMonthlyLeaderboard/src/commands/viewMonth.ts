@@ -7,17 +7,17 @@ import {
   type DiscordManagerWithPlugin,
   HypixelDiscordChatBridgeError
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type LunaliaPlugin from "../../index.ts";
+import type GexpMonthlyLeaderboardPlugin from "../../index.ts";
 import type UpdateGexpLeaderboardScript from "../scripts/UpdateGexpLeaderboard.ts";
 
-class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<LunaliaPlugin>> {
+class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<GexpMonthlyLeaderboardPlugin>> {
   override readonly data = new DiscordCommandDataBuilder()
-    .setName("view-month")
-    .setDescription("view month")
+    .setName("gexp-month")
+    .setDescription("View the guild GEXP leaderboard for a month")
     .addStringOption((option) =>
       option
         .setName("month")
-        .setDescription("the month")
+        .setDescription("The month to view")
         .setRequired(true)
         .addChoices(
           { name: "January", value: "0" },
@@ -34,16 +34,19 @@ class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<LunaliaPl
           { name: "December", value: "11" }
         )
     );
+
   override readonly permission: CommandPermission = CommandPermission.Staff;
 
   override async execute(interaction: ChatInputCommandInteractionWithGuild): Promise<void> {
-    const script = this.discord.application.scripts.getScript("updateGexpLeaderboard") as UpdateGexpLeaderboardScript | undefined;
-    if (!script) throw new HypixelDiscordChatBridgeError("Could not fine the updateGexpLeaderboard script");
+    const script = this.discord.application.scripts.getScript("updateGexpMonthlyLeaderboard") as UpdateGexpLeaderboardScript | undefined;
+    if (!script) throw new HypixelDiscordChatBridgeError("Could not find the monthly GEXP leaderboard script");
+
     const month = Number(interaction.options.getString("month", true));
-    const users = await this.discord.plugin.data.gexpUserManager.getPage(0, 10, month);
-    if (users.length === 0) throw new HypixelDiscordChatBridgeError("No user's found");
-    const leaderboardImage = await script.generateLeaderboardImage(this.discord.plugin.getMonthName(month), users, month, new Date().getUTCFullYear());
-    await interaction.followUp({ files: [new AttachmentBuilder(leaderboardImage, { name: "leaderboard.png" })] });
+    const users = await this.discord.plugin.data.gexpUserManager.getPage(0, 10, month, new Date().getUTCFullYear());
+    if (users.length === 0) throw new HypixelDiscordChatBridgeError("No users found for that month");
+
+    const image = await script.generateLeaderboardImage(this.discord.plugin.getMonthName(month), users, month, new Date().getUTCFullYear());
+    await interaction.followUp({ files: [new AttachmentBuilder(image, { name: "leaderboard.png" })] });
   }
 }
 
