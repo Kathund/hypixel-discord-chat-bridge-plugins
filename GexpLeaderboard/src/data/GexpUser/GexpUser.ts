@@ -1,7 +1,7 @@
 import { GenericData, HypixelDiscordChatBridgeError, MowojangAPI, getPlayer } from "hypixel-discord-chat-bridge/plugin-api";
 import { type Guild, type GuildMember, type Player, removeDashesFromUUID } from "hypixel-api-reborn";
 import type GexpUserManager from "./GexpUserManager.ts";
-import type { BasicGexpUserData, GexpUserData } from "../../../types.ts";
+import type { BasicGexpUserData, GexpUserData } from "../../types/data.ts";
 
 class GexpUser extends GenericData<GexpUserData> {
   readonly trackingId: string;
@@ -55,6 +55,10 @@ class GexpUser extends GenericData<GexpUserData> {
         return date.getUTCMonth() === month && date.getUTCFullYear() === year;
       })
       .reduce((sum, entry) => sum + Number(entry.exp), 0);
+  }
+
+  getTotalGexpForYear(year = new Date().getUTCFullYear()): number {
+    return this.gexp.filter(({ day }) => new Date(day).getUTCFullYear() === year).reduce((sum, entry) => sum + Number(entry.exp), 0);
   }
 }
 

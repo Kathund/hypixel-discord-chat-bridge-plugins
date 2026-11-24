@@ -1,13 +1,14 @@
 import GexpUser from "./GexpUser.ts";
 import { ActionRowBuilder, type BaseMessageOptions, ButtonBuilder, ButtonStyle, ComponentType, Message } from "discord.js";
 import { EmbedHelper, GenericManager, HypixelDiscordChatBridgeError, MowojangAPI, formatNumber } from "hypixel-discord-chat-bridge/plugin-api";
-import { type GexpData, GexpDataSchema, type GexpUserData } from "../../../types.ts";
+import { type GexpData, GexpDataSchema, type GexpUserData } from "../../types/data.ts";
+import { type GexpLeaderboardPeriod, getLeaderboardButtonId } from "../../types/leaderboard.ts";
 import { type GuildMember, removeDashesFromUUID } from "hypixel-api-reborn";
 import type DataManager from "../DataManager.ts";
 
 class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, DataManager> {
   constructor(data: DataManager) {
-    super(data, "data/plugins/gexpMonthlyLeaderboard/users.json", "users", [], GexpDataSchema);
+    super(data, "data/plugins/gexpLeaderboard/users.json", "users", [], GexpDataSchema);
   }
 
   override parseData(data: GexpData): GexpUser[] {
@@ -46,26 +47,41 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
   }
 
   async getPage(page = 0, limit = 10, month = new Date().getUTCMonth(), year = new Date().getUTCFullYear()): Promise<GexpUser[]> {
+    return await this.getLeaderboardPage("monthly", page, limit, year, month);
+  }
+
+  async getLeaderboardPage(
+    period: GexpLeaderboardPeriod,
+    page = 0,
+    limit = 10,
+    year = new Date().getUTCFullYear(),
+    month = new Date().getUTCMonth()
+  ): Promise<GexpUser[]> {
+    const getTotal = (user: GexpUser): number => (period === "monthly" ? user.getTotalGexpForMonth(month, year) : user.getTotalGexpForYear(year));
     return await this.getFullData().then((users) =>
       users
-        .filter((user) => user.getTotalGexpForMonth(month, year) !== 0)
-        .sort((a, b) => b.getTotalGexpForMonth(month, year) - a.getTotalGexpForMonth(month, year))
+        .filter((user) => getTotal(user) !== 0)
+        .sort((a, b) => getTotal(b) - getTotal(a))
         .slice(page * limit, (page + 1) * limit)
     );
   }
 
-  async getMaxPageNumber(limit = 10): Promise<number> {
-    const month = new Date().getUTCMonth();
-    const users = await this.getFullData().then((data) => data.filter((user) => user.getTotalGexpForMonth(month) !== 0));
+  async getMaxPageNumber(limit = 10, period: GexpLeaderboardPeriod = "monthly", year = new Date().getUTCFullYear(), month = new Date().getUTCMonth()): Promise<number> {
+    const users = await this.getFullData().then((data) =>
+      data.filter((user) => (period === "monthly" ? user.getTotalGexpForMonth(month, year) !== 0 : user.getTotalGexpForYear(year) !== 0))
+    );
     return Math.max(1, Math.ceil(users.length / limit));
   }
 
-  async getPageForUser(uuid: string, limit = 10): Promise<number | null> {
-    const users = await this.getFullData().then((data) =>
-      data
-        .filter((user) => user.getTotalGexpForMonth(new Date().getUTCMonth()) !== 0)
-        .sort((a, b) => b.getTotalGexpForMonth(new Date().getUTCMonth()) - a.getTotalGexpForMonth(new Date().getUTCMonth()))
-    );
+  async getPageForUser(
+    uuid: string,
+    limit = 10,
+    period: GexpLeaderboardPeriod = "monthly",
+    year = new Date().getUTCFullYear(),
+    month = new Date().getUTCMonth()
+  ): Promise<number | null> {
+    const getTotal = (user: GexpUser): number => (period === "monthly" ? user.getTotalGexpForMonth(month, year) : user.getTotalGexpForYear(year));
+    const users = await this.getFullData().then((data) => data.filter((user) => getTotal(user) !== 0).sort((a, b) => getTotal(b) - getTotal(a)));
     const index = users.findIndex((user) => user.uuid === removeDashesFromUUID(uuid));
     if (index === -1) return null;
     return Math.floor(index / limit);
@@ -78,36 +94,55 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
     return "🌸";
   }
 
-  async parseUser(user: GexpUser, position: number, highlightUUID?: string): Promise<string> {
+  async parseUser(
+    user: GexpUser,
+    position: number,
+    highlightUUID?: string,
+    period: GexpLeaderboardPeriod = "monthly",
+    year = new Date().getUTCFullYear(),
+    month = new Date().getUTCMonth()
+  ): Promise<string> {
     const username = (await user.getUsername()) ?? "UNKNOWN";
     const shouldHighlight = user.uuid === highlightUUID;
-    const monthlyGexp = formatNumber(user.getTotalGexpForMonth(new Date().getUTCMonth()));
-    return `${shouldHighlight ? "**__" : ""}${this.getEmoji(position)} • ${position}. ${username.replaceAll("_", "\\_")}: ${monthlyGexp}${shouldHighlight ? "__**" : ""}`;
+    const totalGexp = period === "monthly" ? user.getTotalGexpForMonth(month, year) : user.getTotalGexpForYear(year);
+    return `${shouldHighlight ? "**__" : ""}${this.getEmoji(position)} • ${position}. ${username.replaceAll("_", "\\_")}: ${formatNumber(
+      totalGexp
+    )}${shouldHighlight ? "__**" : ""}`;
   }
 
-  async getViewMoreResponse(page = 0, userId: string | null = null): Promise<BaseMessageOptions> {
+  async getViewMoreResponse(
+    page = 0,
+    userId: string | null = null,
+    period: GexpLeaderboardPeriod = "monthly",
+    year = new Date().getUTCFullYear(),
+    month = new Date().getUTCMonth()
+  ): Promise<BaseMessageOptions> {
     let highlightUUID: string | undefined;
     if (userId) {
       const linked = await this.data.plugin.application.data.linked.getUserByDiscordId(userId);
       highlightUUID = linked?.uuid;
     }
 
-    const maxPages = await this.getMaxPageNumber(10);
+    const maxPages = await this.getMaxPageNumber(10, period, year, month);
     const currentPage = Math.min(Math.max(page, 0), maxPages - 1);
-    const users = await this.getPage(currentPage, 10);
+    const users = await this.getLeaderboardPage(period, currentPage, 10, year, month);
     const parsedUsers: string[] = [];
     for (const [index, user] of users.entries()) {
-      parsedUsers.push(await this.parseUser(user, index + 1 + currentPage * 10, highlightUUID));
+      parsedUsers.push(await this.parseUser(user, index + 1 + currentPage * 10, highlightUUID, period, year, month));
     }
 
     return {
-      embeds: [new EmbedHelper().setTitle("Monthly GEXP Leaderboard").setDescription(parsedUsers.join("\n") || "No users found this month.")],
+      embeds: [
+        new EmbedHelper()
+          .setTitle(`${period === "monthly" ? "Monthly" : "Yearly"} GEXP Leaderboard`)
+          .setDescription(parsedUsers.join("\n") || `No users found this ${period === "monthly" ? "month" : "year"}.`)
+      ],
       components: [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setLabel("Previous Page")
             .setStyle(ButtonStyle.Secondary)
-            .setCustomId("gexpMonthlyLeaderboardPrevious")
+            .setCustomId(getLeaderboardButtonId(period, "Previous"))
             .setDisabled(currentPage === 0),
           new ButtonBuilder()
             .setLabel(`${currentPage + 1} of ${maxPages} page(s)`)
@@ -117,14 +152,14 @@ class GexpUserManager extends GenericManager<GexpUserData, GexpData, GexpUser, D
           new ButtonBuilder()
             .setLabel("Next Page")
             .setStyle(ButtonStyle.Secondary)
-            .setCustomId("gexpMonthlyLeaderboardNext")
+            .setCustomId(getLeaderboardButtonId(period, "Next"))
             .setDisabled(currentPage >= maxPages - 1)
         ),
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setLabel("View Self")
             .setStyle(ButtonStyle.Primary)
-            .setCustomId("gexpMonthlyLeaderboardSelf")
+            .setCustomId(getLeaderboardButtonId(period, "Self"))
             .setDisabled(highlightUUID === undefined)
         )
       ]

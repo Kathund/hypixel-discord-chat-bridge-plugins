@@ -7,24 +7,25 @@ import SetupCommand from "./src/commands/setup.ts";
 import UpdateGexpLeaderboardScript from "./src/scripts/UpdateGexpLeaderboard.ts";
 import ViewMonthCommand from "./src/commands/viewMonth.ts";
 import ViewMoreButton from "./src/buttons/ViewMoreButton.ts";
+import ViewYearCommand from "./src/commands/viewYear.ts";
 import { Application, BridgePlugin, type BridgePluginContext } from "hypixel-discord-chat-bridge/plugin-api";
-import { GexpMonthlyLeaderboardConfig } from "./src/types/config.ts";
+import { GexpLeaderboardConfig } from "./src/types/config.ts";
 import { access, writeFile } from "node:fs/promises";
-import type { GexpMonthlyLeaderboardPluginWithData } from "./src/types/misc.ts";
+import type { GexpLeaderboardPluginWithData } from "./src/types/misc.ts";
 
-class GexpMonthlyLeaderboardPlugin extends BridgePlugin<GexpMonthlyLeaderboardPlugin> {
+class GexpLeaderboardPlugin extends BridgePlugin<GexpLeaderboardPlugin> {
   readonly data: DataManager;
   override readonly metadata = {
-    name: "GEXP Monthly Leaderboard",
-    description: "Publishes the Hypixel guild monthly GEXP leaderboard",
+    name: "GEXP Leaderboard",
+    description: "Dynamic GEXP Leaderboard that auto resets",
     version: "1.0.0",
     author: "Amber",
-    link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/GexpMonthlyLeaderboard"
+    link: "https://github.com/Kathund/hypixel-discord-chat-bridge-plugins/tree/main/GexpLeaderboard"
   } as const;
   #started = false;
-  config?: GexpMonthlyLeaderboardConfig;
+  config?: GexpLeaderboardConfig;
 
-  constructor(context: BridgePluginContext<GexpMonthlyLeaderboardPlugin>, application: Application) {
+  constructor(context: BridgePluginContext<GexpLeaderboardPlugin>, application: Application) {
     super(context, application);
     this.data = new DataManager(this);
   }
@@ -32,10 +33,15 @@ class GexpMonthlyLeaderboardPlugin extends BridgePlugin<GexpMonthlyLeaderboardPl
   override registerExtensions(): Promise<void> {
     this.context.registerDiscordCommand((discord) => new SetupCommand(discord));
     this.context.registerDiscordCommand((discord) => new ViewMonthCommand(discord));
-    this.context.registerButton((discord) => new GoToSelfButton(discord));
-    this.context.registerButton((discord) => new NextPageButton(discord));
-    this.context.registerButton((discord) => new PreviousPageButton(discord));
-    this.context.registerButton((discord) => new ViewMoreButton(discord));
+    this.context.registerDiscordCommand((discord) => new ViewYearCommand(discord));
+    this.context.registerButton((discord) => new GoToSelfButton(discord, "monthly"));
+    this.context.registerButton((discord) => new GoToSelfButton(discord, "yearly"));
+    this.context.registerButton((discord) => new NextPageButton(discord, "monthly"));
+    this.context.registerButton((discord) => new NextPageButton(discord, "yearly"));
+    this.context.registerButton((discord) => new PreviousPageButton(discord, "monthly"));
+    this.context.registerButton((discord) => new PreviousPageButton(discord, "yearly"));
+    this.context.registerButton((discord) => new ViewMoreButton(discord, "monthly"));
+    this.context.registerButton((discord) => new ViewMoreButton(discord, "yearly"));
     this.context.registerScript((scripts) => new UpdateGexpLeaderboardScript(scripts));
     return Promise.resolve();
   }
@@ -52,13 +58,9 @@ class GexpMonthlyLeaderboardPlugin extends BridgePlugin<GexpMonthlyLeaderboardPl
   private async loadData(): Promise<boolean> {
     const configManager = new ConfigManager();
     try {
-      await access("data/plugins/gexpMonthlyLeaderboard/config.json");
+      await access("data/plugins/gexpLeaderboard/config.json");
     } catch {
-      await writeFile(
-        "data/plugins/gexpMonthlyLeaderboard/config.json",
-        JSON.stringify({ configVersion: 1, discord: { channelId: null, leaderboardMessageId: null, leaderboardInfoMessageId: null } }, null, 2),
-        "utf-8"
-      );
+      await writeFile("data/plugins/gexpLeaderboard/config.json", JSON.stringify(await configManager.getExampleConfigFile(), null, 2), "utf-8");
     }
 
     this.config = await configManager.init();
@@ -77,10 +79,10 @@ class GexpMonthlyLeaderboardPlugin extends BridgePlugin<GexpMonthlyLeaderboardPl
     return months[month] ?? "UNKNOWN";
   }
 
-  isFullyLoaded(): this is GexpMonthlyLeaderboardPluginWithData {
+  isFullyLoaded(): this is GexpLeaderboardPluginWithData {
     if (this.config === undefined) return false;
     return true;
   }
 }
 
-export default GexpMonthlyLeaderboardPlugin;
+export default GexpLeaderboardPlugin;

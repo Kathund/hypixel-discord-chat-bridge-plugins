@@ -1,0 +1,15 @@
+{
+  "configVersion": 2,
+  "discord": {
+    "monthly": {
+      "channelId": null,
+      "leaderboardMessageId": null,
+      "leaderboardInfoMessageId": null
+    },
+    "yearly": {
+      "channelId": null,
+      "leaderboardMessageId": null,
+      "leaderboardInfoMessageId": null
+    }
+  }
+}

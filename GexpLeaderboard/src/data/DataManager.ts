@@ -1,17 +1,17 @@
 import GexpUserManager from "./GexpUser/GexpUserManager.ts";
 import { mkdir } from "node:fs/promises";
-import type GexpMonthlyLeaderboardPlugin from "../../index.ts";
+import type GexpLeaderboardPlugin from "../../index.ts";
 import type { Lifecycle } from "hypixel-discord-chat-bridge/plugin-api";
 
 class DataManager implements Lifecycle {
   readonly gexpUserManager: GexpUserManager;
 
-  constructor(readonly plugin: GexpMonthlyLeaderboardPlugin) {
+  constructor(readonly plugin: GexpLeaderboardPlugin) {
     this.gexpUserManager = new GexpUserManager(this);
   }
 
   async start(): Promise<void> {
-    await mkdir("./data/plugins/gexpMonthlyLeaderboard", { recursive: true });
+    await mkdir("./data/plugins/gexpLeaderboard", { recursive: true });
     await this.gexpUserManager.start();
   }
 

@@ -7,10 +7,10 @@ import {
   type DiscordManagerWithPlugin,
   HypixelDiscordChatBridgeError
 } from "hypixel-discord-chat-bridge/plugin-api";
-import type GexpMonthlyLeaderboardPlugin from "../../index.ts";
-import type UpdateGexpLeaderboardScript from "../scripts/UpdateGexpLeaderboard.ts";
+import { generateLeaderboardImage, getLeaderboardTitle } from "../utils/LeaderboardUtils.ts";
+import type GexpLeaderboardPlugin from "../../index.ts";
 
-class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<GexpMonthlyLeaderboardPlugin>> {
+class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<GexpLeaderboardPlugin>> {
   override readonly data = new DiscordCommandDataBuilder()
     .setName("gexp-month")
     .setDescription("View the guild GEXP leaderboard for a month")
@@ -38,14 +38,17 @@ class ViewMonthCommand extends DiscordCommand<DiscordManagerWithPlugin<GexpMonth
   override readonly permission: CommandPermission = CommandPermission.Staff;
 
   override async execute(interaction: ChatInputCommandInteractionWithGuild): Promise<void> {
-    const script = this.discord.application.scripts.getScript("updateGexpMonthlyLeaderboard") as UpdateGexpLeaderboardScript | undefined;
-    if (!script) throw new HypixelDiscordChatBridgeError("Could not find the monthly GEXP leaderboard script");
-
     const month = Number(interaction.options.getString("month", true));
-    const users = await this.discord.plugin.data.gexpUserManager.getPage(0, 10, month, new Date().getUTCFullYear());
+    const year = new Date().getUTCFullYear();
+    const users = await this.discord.plugin.data.gexpUserManager.getLeaderboardPage("monthly", 0, 10, year, month);
     if (users.length === 0) throw new HypixelDiscordChatBridgeError("No users found for that month");
 
-    const image = await script.generateLeaderboardImage(this.discord.plugin.getMonthName(month), users, month, new Date().getUTCFullYear());
+    const image = await generateLeaderboardImage(
+      getLeaderboardTitle("monthly", year, this.discord.plugin.getMonthName(month)),
+      users,
+      (user) => user.getTotalGexpForMonth(month, year),
+      (text, username) => this.discord.application.minecraft.renderer.renderText(text, username, "modern")
+    );
     await interaction.followUp({ files: [new AttachmentBuilder(image, { name: "leaderboard.png" })] });
   }
 }
