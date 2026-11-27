@@ -1,5 +1,6 @@
+import EventHandler from "./src/EventHandler.ts";
 import { Application, BridgePlugin, type BridgePluginContext, safeListener, toError } from "hypixel-discord-chat-bridge/plugin-api";
-import { Events, GuildMember, type PartialGuildMember } from "discord.js";
+import { Events, Guild } from "discord.js";
 
 class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
   override readonly metadata = {
@@ -11,9 +12,16 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
   } as const;
   #started = false;
   private enabled: boolean = false;
+  private readonly eventHandler: EventHandler;
   constructor(context: BridgePluginContext<LunaliaPlugin>, application: Application) {
     super(context, application);
     this.enabled = this.application.config.discord.serverId === "1456428206230999075";
+    this.eventHandler = new EventHandler(this);
+  }
+
+  isCorrectGuild(guild: Guild): boolean {
+    if (this.application.config.discord.serverId !== "1456428206230999075") return false;
+    return guild.id === this.application.config.discord.serverId;
   }
 
   override registerExtensions(): Promise<void> {
@@ -29,7 +37,11 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
     if (this.application.discord.hasClient()) {
       this.application.discord.client.on(
         Events.GuildMemberAdd,
-        safeListener((member) => this.onGuildMemberAdd(member), this.reportError)
+        safeListener((member) => this.eventHandler.onGuildMemberAdd(member), this.reportError)
+      );
+      this.application.discord.client.on(
+        Events.ThreadCreate,
+        safeListener((thread) => this.eventHandler.onThreadCreate(thread), this.reportError)
       );
     }
     return Promise.resolve();
@@ -41,13 +53,6 @@ class LunaliaPlugin extends BridgePlugin<LunaliaPlugin> {
     this.#started = false;
     this.context.logger.info(`${this.metadata.name} plugin stopped.`);
     return Promise.resolve();
-  }
-
-  private async onGuildMemberAdd(member: GuildMember | PartialGuildMember) {
-    if (!this.application.config.blacklist.enabled) return;
-    const blacklistUser = await this.application.data.blacklist.getUserByDiscordId(member.user.id);
-    if (blacklistUser === undefined) return;
-    await member.roles.add("1536394089988100106");
   }
 
   private readonly reportError = (error: unknown): Promise<void> => this.application.discord.handleError(toError(error));
